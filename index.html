@@ -1197,8 +1197,8 @@ function subscribePremium(plan) {
   if(!currentUser) { openModal('login'); return; }
   // 👇 REEMPLAZA con tus URLs reales de Lemon Squeezy
   const links = {
-    espiritu: 'https://TU-TIENDA.lemonsqueezy.com/checkout/espiritu', // 👈
-    alfa:     'https://TU-TIENDA.lemonsqueezy.com/checkout/alfa'      // 👈
+    espiritu: 'https://wildkin.lemonsqueezy.com/checkout/buy/72080a47-d17a-4ba0-9e4b-e5242e81e246', // 👈
+    alfa:     'https://wildkin.lemonsqueezy.com/checkout/buy/aabbdf92-de52-4c59-8618-3c2b889b8dc5'      // 👈
   };
   // Pasar el email del usuario para que Lemon Squeezy lo identifique
   const url = new URL(links[plan]);
@@ -1261,3 +1261,4 @@ sb.auth.onAuthStateChange(async(event,session)=>{
 </script>
 </body>
 </html>
+
