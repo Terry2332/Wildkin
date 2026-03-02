@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wildkin — Comunidad Therian</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c14;
+    --bg2: #090e1a;
+    --surface: #0f1520;
+    --surface2: #131c2a;
+    --border: #182238;
+    --border2: #1e2e4a;
+    --text: #c8d8f0;
+    --text2: #6a84a8;
+    --text3: #3a4e68;
+    --accent: #4a9fd4;
+    --accent2: #1e6a9a;
+    --amber: #c8922a;
+    --amber2: #9a6a18;
+    --red: #c84a3a;
+    --premium: #d4a82a;
+    --premium2: #a07818;
+    --wolf: #8ab4d4;
+    --moon: #d0e4f8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Crimson Pro', Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(30,78,140,0.2) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 30% at 80% 80%, rgba(74,159,212,0.06) 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ---- LAYOUT ---- */
+  .app { position: relative; z-index: 1; }
+
+  /* ---- HEADER ---- */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(13,15,10,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px;
+  }
+
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.3rem;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .logo-icon { font-size: 1.6rem; filter: drop-shadow(0 0 8px rgba(74,159,212,0.7)); }
+
+  nav { display: flex; gap: 4px; align-items: center; }
+  .nav-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--text2); font-family: 'Space Mono', monospace; font-size: 0.72rem;
+    padding: 6px 12px; border-radius: 6px;
+    transition: all 0.2s; letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .nav-btn:hover { color: var(--text); background: var(--surface2); }
+  .nav-btn.active { color: var(--accent); background: rgba(74,159,212,0.1); }
+
+  .header-right { display: flex; align-items: center; gap: 10px; }
+  .user-badge {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.85rem; color: var(--text2);
+  }
+  .user-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--surface2);
+    border: 2px solid var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .user-avatar:hover { border-color: var(--accent); }
+  .premium-crown { color: var(--premium); font-size: 0.9rem; }
+
+  .btn {
+    padding: 7px 16px; border-radius: 8px; cursor: pointer;
+    font-family: 'Space Mono', monospace; font-size: 0.72rem;
+    letter-spacing: 0.5px; border: none; transition: all 0.2s;
+  }
+  .btn-primary { background: var(--accent2); color: #fff; border: 1px solid var(--accent); }
+  .btn-primary:hover { background: var(--accent); box-shadow: 0 0 12px rgba(74,159,212,0.35); }
+  .btn-ghost { background: none; color: var(--text2); border: 1px solid var(--border2); }
+  .btn-ghost:hover { color: var(--text); border-color: var(--text3); }
+  .btn-premium { background: linear-gradient(135deg, var(--amber2), var(--premium2)); color: #fff; border: 1px solid var(--premium); }
+  .btn-premium:hover { background: linear-gradient(135deg, var(--amber), var(--premium)); box-shadow: 0 0 12px rgba(212,168,42,0.3); }
+  .btn-sm { padding: 4px 10px; font-size: 0.65rem; }
+  .btn-danger { background: rgba(200,74,58,0.15); color: var(--red); border: 1px solid rgba(200,74,58,0.3); }
+  .btn-danger:hover { background: rgba(200,74,58,0.25); }
+
+  /* ---- MAIN CONTENT ---- */
+  main { max-width: 1100px; margin: 0 auto; padding: 28px 20px; }
+
+  /* ---- PAGES ---- */
+  .page { display: none; animation: fadeIn 0.3s ease; }
+  .page.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform:none; } }
+
+  /* ---- HERO / HOME ---- */
+  .hero {
+    text-align: center;
+    padding: 60px 20px 40px;
+    position: relative;
+  }
+  .hero-moon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 0 20px rgba(232,224,200,0.4));
+    animation: moonFloat 4s ease-in-out infinite;
+  }
+  @keyframes moonFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+  .hero h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    color: var(--moon);
+    letter-spacing: 4px;
+    line-height: 1.2;
+    text-shadow: 0 0 40px rgba(232,224,200,0.3);
+  }
+  .hero p {
+    color: var(--text2);
+    font-size: 1.15rem;
+    max-width: 500px;
+    margin: 16px auto 32px;
+    font-style: italic;
+    line-height: 1.7;
+  }
+  .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 50px;
+  }
+  .feature-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    transition: all 0.3s;
+    cursor: default;
+  }
+  .feature-card:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+  .feature-icon { font-size: 2rem; margin-bottom: 12px; display: block; }
+  .feature-card h3 { font-family: 'Cinzel Decorative', serif; font-size: 0.85rem; color: var(--accent); letter-spacing: 2px; margin-bottom: 8px; }
+  .feature-card p { color: var(--text2); font-size: 0.95rem; line-height: 1.6; }
+
+  /* ---- COMMUNITY (REDDIT-LIKE) ---- */
+  .community-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 24px;
+    align-items: start;
+  }
+  @media(max-width:768px) { .community-layout { grid-template-columns: 1fr; } }
+
+  .sidebar-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .sidebar-card h3 { font-family: 'Space Mono', monospace; font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text3); margin-bottom: 14px; }
+
+  .pack-list { display: flex; flex-direction: column; gap: 6px; }
+  .pack-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 10px; border-radius: 8px; cursor: pointer;
+    transition: background 0.2s; font-size: 0.9rem; color: var(--text2);
+  }
+  .pack-item:hover { background: var(--surface2); color: var(--text); }
+  .pack-item.active { background: rgba(74,159,212,0.1); color: var(--accent); }
+  .pack-count { margin-left: auto; font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--text3); }
+
+  .new-post-btn {
+    width: 100%; margin-bottom: 18px;
+    background: var(--surface); border: 2px dashed var(--border2);
+    border-radius: 12px; padding: 14px;
+    color: var(--text3); font-family: 'Crimson Pro', serif; font-size: 1rem;
+    cursor: pointer; transition: all 0.2s; text-align: left;
+  }
+  .new-post-btn:hover { border-color: var(--accent); color: var(--text2); }
+
+  .posts-list { display: flex; flex-direction: column; gap: 12px; }
+
+  .post-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .post-card:hover { border-color: var(--border2); box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+
+  .post-meta {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.8rem; color: var(--text3);
+    margin-bottom: 10px; flex-wrap: wrap;
+  }
+  .post-author { color: var(--accent); font-weight: 600; }
+  .post-author.anon { color: var(--wolf); }
+  .pack-tag {
+    background: rgba(74,159,212,0.1);
+    border: 1px solid rgba(74,159,212,0.2);
+    color: var(--accent); padding: 2px 8px; border-radius: 20px;
+    font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 1px;
+  }
+  .pack-tag.wolf { background: rgba(138,180,212,0.1); border-color: rgba(138,180,212,0.2); color: var(--wolf); }
+  .pack-tag.feline { background: rgba(200,74,58,0.1); border-color: rgba(200,74,58,0.2); color: #e87060; }
+  .pack-tag.avian { background: rgba(200,170,42,0.1); border-color: rgba(200,170,42,0.2); color: var(--amber); }
+  .pack-tag.fox { background: rgba(200,120,42,0.1); border-color: rgba(200,120,42,0.2); color: #e89060; }
+  .pack-tag.deer { background: rgba(120,200,120,0.1); border-color: rgba(120,200,120,0.2); color: #80d080; }
+  .pack-tag.oc { background: rgba(170,120,200,0.1); border-color: rgba(170,120,200,0.2); color: #b880d0; }
+
+  .premium-tag {
+    background: rgba(212,168,42,0.1);
+    border: 1px solid rgba(212,168,42,0.3);
+    color: var(--premium); padding: 2px 8px; border-radius: 20px;
+    font-size: 0.65rem; font-family: 'Space Mono', monospace;
+  }
+  .anon-tag {
+    background: rgba(138,180,212,0.1);
+    border: 1px solid rgba(138,180,212,0.2);
+    color: var(--wolf); padding: 2px 8px; border-radius: 20px;
+    font-size: 0.65rem; font-family: 'Space Mono', monospace;
+  }
+
+  .post-card h2 { font-family: 'Crimson Pro', serif; font-size: 1.2rem; font-weight: 600; color: var(--text); margin-bottom: 8px; line-height: 1.4; }
+  .post-card p { color: var(--text2); font-size: 0.95rem; line-height: 1.65; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+  .post-actions {
+    display: flex; align-items: center; gap: 16px;
+    margin-top: 14px; padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  .post-action-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--text3); font-size: 0.82rem; display: flex; align-items: center; gap: 5px;
+    transition: color 0.2s; padding: 4px 6px; border-radius: 6px;
+    font-family: 'Space Mono', monospace;
+  }
+  .post-action-btn:hover { color: var(--text2); background: var(--surface2); }
+  .post-action-btn.voted { color: var(--accent); }
+  .howl-count { color: var(--accent); font-weight: 700; }
+
+  /* ---- DIARY ---- */
+  .diary-layout {
+    display: grid; grid-template-columns: 260px 1fr;
+    gap: 24px; align-items: start;
+  }
+  @media(max-width:768px) { .diary-layout { grid-template-columns: 1fr; } }
+
+  .diary-sidebar { position: sticky; top: 80px; }
+  .diary-entries-list { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+  .diary-entry-item {
+    padding: 10px 12px; border-radius: 8px; cursor: pointer;
+    border: 1px solid transparent; transition: all 0.2s;
+  }
+  .diary-entry-item:hover { background: var(--surface2); border-color: var(--border); }
+  .diary-entry-item.active { background: rgba(74,159,212,0.08); border-color: rgba(74,159,212,0.25); }
+  .diary-entry-item .entry-title { font-size: 0.92rem; color: var(--text); margin-bottom: 2px; }
+  .diary-entry-item .entry-date { font-size: 0.72rem; color: var(--text3); font-family: 'Space Mono', monospace; }
+
+  .diary-editor {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .editor-toolbar {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  }
+  .editor-toolbar span { font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; margin-right: 6px; }
+  .tool-btn {
+    background: none; border: 1px solid var(--border); cursor: pointer;
+    color: var(--text2); padding: 4px 8px; border-radius: 6px;
+    font-size: 0.8rem; transition: all 0.2s;
+  }
+  .tool-btn:hover { background: var(--surface2); color: var(--text); border-color: var(--border2); }
+
+  #diary-title-input {
+    width: 100%;
+    background: none; border: none; outline: none;
+    padding: 24px 24px 12px;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.4rem; color: var(--text);
+    border-bottom: 1px solid var(--border);
+  }
+  #diary-title-input::placeholder { color: var(--text3); }
+
+  #diary-content-input {
+    width: 100%; min-height: 360px;
+    background: none; border: none; outline: none;
+    padding: 20px 24px;
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.05rem; color: var(--text2);
+    line-height: 1.8; resize: vertical;
+  }
+  #diary-content-input::placeholder { color: var(--text3); font-style: italic; }
+
+  .editor-footer {
+    padding: 14px 20px;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 8px;
+  }
+  .mood-picker { display: flex; gap: 6px; }
+  .mood-btn {
+    background: none; border: 1px solid var(--border); cursor: pointer;
+    border-radius: 8px; padding: 4px 8px; font-size: 1.1rem;
+    transition: all 0.2s;
+  }
+  .mood-btn:hover { border-color: var(--border2); background: var(--surface2); transform: scale(1.1); }
+  .mood-btn.selected { border-color: var(--accent); background: rgba(74,159,212,0.1); }
+
+  /* ---- PREMIUM PAGE ---- */
+  .premium-hero {
+    text-align: center; padding: 48px 20px 32px;
+  }
+  .premium-hero h1 {
+    font-family: 'Cinzel Decorative', serif; font-size: 2.5rem;
+    background: linear-gradient(135deg, var(--premium), var(--amber), var(--premium));
+    background-size: 200%;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    animation: shimmer 3s linear infinite;
+    letter-spacing: 3px;
+  }
+  @keyframes shimmer { 0%{background-position:0%} 100%{background-position:200%} }
+  .premium-hero p { color: var(--text2); font-size: 1.1rem; max-width: 480px; margin: 14px auto; font-style: italic; }
+
+  .plans-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px; max-width: 860px; margin: 0 auto 50px;
+  }
+  .plan-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 28px;
+    transition: all 0.3s; position: relative; overflow: hidden;
+  }
+  .plan-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, transparent 60%, rgba(212,168,42,0.03));
+    pointer-events: none;
+  }
+  .plan-card.featured {
+    border-color: rgba(212,168,42,0.4);
+    box-shadow: 0 0 30px rgba(212,168,42,0.08);
+  }
+  .plan-card.featured::before { background: linear-gradient(135deg, transparent 40%, rgba(212,168,42,0.07)); }
+  .plan-badge {
+    position: absolute; top: 16px; right: 16px;
+    background: linear-gradient(135deg, var(--premium2), var(--amber2));
+    color: #fff; padding: 3px 10px; border-radius: 20px;
+    font-family: 'Space Mono', monospace; font-size: 0.62rem; letter-spacing: 1px;
+  }
+  .plan-name { font-family: 'Cinzel Decorative', serif; font-size: 1.1rem; color: var(--text); letter-spacing: 2px; margin-bottom: 6px; }
+  .plan-price { margin: 14px 0 20px; }
+  .plan-price .amount { font-family: 'Space Mono', monospace; font-size: 2rem; color: var(--premium); }
+  .plan-price .period { color: var(--text3); font-size: 0.85rem; }
+  .plan-features { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+  .plan-features li { display: flex; align-items: flex-start; gap: 8px; color: var(--text2); font-size: 0.95rem; line-height: 1.5; }
+  .plan-features li::before { content: '◆'; color: var(--accent); font-size: 0.5rem; margin-top: 5px; flex-shrink: 0; }
+  .plan-features li.premium::before { color: var(--premium); }
+
+  /* ---- AUTH MODAL ---- */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.8); backdrop-filter: blur(6px);
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface); border: 1px solid var(--border2);
+    border-radius: 16px; padding: 36px; width: 100%; max-width: 400px;
+    position: relative; animation: modalIn 0.25s ease;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  @keyframes modalIn { from{opacity:0;transform:scale(0.95) translateY(10px)} to{opacity:1;transform:none} }
+  .modal-close {
+    position: absolute; top: 16px; right: 16px;
+    background: none; border: none; cursor: pointer;
+    color: var(--text3); font-size: 1.3rem; line-height: 1;
+    transition: color 0.2s;
+  }
+  .modal-close:hover { color: var(--text); }
+  .modal h2 { font-family: 'Cinzel Decorative', serif; font-size: 1.2rem; color: var(--text); letter-spacing: 2px; margin-bottom: 6px; }
+  .modal p { color: var(--text3); font-size: 0.9rem; margin-bottom: 24px; }
+
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-family: 'Space Mono', monospace; font-size: 0.68rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text3); margin-bottom: 6px; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; background: var(--bg2); border: 1px solid var(--border2);
+    border-radius: 8px; padding: 10px 14px;
+    color: var(--text); font-family: 'Crimson Pro', serif; font-size: 1rem;
+    outline: none; transition: border-color 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
+  .form-group textarea { min-height: 120px; resize: vertical; line-height: 1.6; }
+  .form-group select option { background: var(--bg2); }
+
+  .checkbox-group { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+  .checkbox-group input[type=checkbox] { width: auto; accent-color: var(--accent); }
+  .checkbox-group label { margin-bottom: 0; cursor: pointer; color: var(--text2); font-family: 'Crimson Pro', serif; font-size: 0.9rem; text-transform: none; letter-spacing: 0; }
+
+  .tabs { display: flex; gap: 0; margin-bottom: 24px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .tab-btn { flex: 1; padding: 9px; background: none; border: none; cursor: pointer; color: var(--text3); font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 1px; transition: all 0.2s; }
+  .tab-btn.active { background: var(--surface2); color: var(--accent); }
+
+  .form-switch { text-align: center; margin-top: 16px; font-size: 0.88rem; color: var(--text3); }
+  .form-switch a { color: var(--accent); cursor: pointer; text-decoration: underline; }
+
+  /* ---- POST MODAL ---- */
+  .new-post-modal .modal { max-width: 560px; }
+
+  /* ---- PROFILE DROPDOWN ---- */
+  .dropdown { position: relative; }
+  .dropdown-menu {
+    display: none; position: absolute; top: calc(100% + 8px); right: 0;
+    background: var(--surface); border: 1px solid var(--border2);
+    border-radius: 10px; padding: 8px;
+    min-width: 180px; z-index: 200;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+  .dropdown-menu.open { display: block; animation: fadeIn 0.15s ease; }
+  .dropdown-item {
+    display: block; width: 100%; text-align: left;
+    background: none; border: none; cursor: pointer;
+    padding: 8px 12px; border-radius: 7px;
+    color: var(--text2); font-size: 0.9rem;
+    transition: all 0.15s;
+  }
+  .dropdown-item:hover { background: var(--surface2); color: var(--text); }
+  .dropdown-item.danger { color: var(--red); }
+  .dropdown-divider { height: 1px; background: var(--border); margin: 6px 0; }
+
+  /* ---- NOTIFICATIONS ---- */
+  .notif {
+    position: fixed; top: 76px; right: 20px; z-index: 300;
+    background: var(--surface2); border: 1px solid var(--border2);
+    border-radius: 10px; padding: 12px 20px;
+    font-size: 0.88rem; color: var(--text);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    animation: notifIn 0.3s ease forwards;
+    max-width: 300px;
+  }
+  .notif.success { border-color: rgba(74,159,212,0.4); }
+  .notif.error { border-color: rgba(200,74,58,0.4); color: var(--red); }
+  @keyframes notifIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:none} }
+
+  /* ---- FULL POST VIEW ---- */
+  .post-full {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 30px;
+    margin-bottom: 20px;
+  }
+  .post-full h1 { font-size: 1.8rem; color: var(--text); margin-bottom: 16px; line-height: 1.3; }
+  .post-full .post-body { color: var(--text2); font-size: 1.05rem; line-height: 1.8; white-space: pre-wrap; }
+  .comments-section { margin-top: 28px; }
+  .comments-section h3 { font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text3); margin-bottom: 16px; }
+  .comment-form { display: flex; gap: 10px; margin-bottom: 20px; }
+  .comment-form input { flex: 1; }
+  .comment-item {
+    padding: 14px 16px; border-radius: 10px;
+    background: var(--bg2); border: 1px solid var(--border);
+    margin-bottom: 10px;
+  }
+  .comment-author { font-size: 0.82rem; color: var(--accent); margin-bottom: 4px; }
+  .comment-author.anon { color: var(--wolf); }
+  .comment-body { color: var(--text2); font-size: 0.95rem; line-height: 1.6; }
+
+  /* ---- PREMIUM LOCK ---- */
+  .premium-lock {
+    text-align: center; padding: 30px;
+    background: var(--surface); border: 1px solid rgba(212,168,42,0.3);
+    border-radius: 14px; margin-top: 20px;
+  }
+  .premium-lock .lock-icon { font-size: 2rem; margin-bottom: 12px; }
+  .premium-lock h3 { font-family: 'Cinzel Decorative', serif; color: var(--premium); font-size: 1rem; letter-spacing: 2px; margin-bottom: 8px; }
+  .premium-lock p { color: var(--text3); font-size: 0.9rem; margin-bottom: 16px; }
+
+  /* misc */
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--text3); }
+  .empty-state .icon { font-size: 3rem; margin-bottom: 16px; opacity: 0.5; }
+  .empty-state p { font-size: 1rem; font-style: italic; }
+  .back-btn { background: none; border: none; cursor: pointer; color: var(--text3); font-size: 0.85rem; display: flex; align-items: center; gap: 6px; margin-bottom: 16px; transition: color 0.2s; }
+  .back-btn:hover { color: var(--text); }
+  .tag-selector { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .tag-option { padding: 4px 12px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; border: 1px solid var(--border2); color: var(--text3); background: none; transition: all 0.2s; }
+  .tag-option:hover { border-color: var(--border2); color: var(--text2); }
+  .tag-option.selected { background: rgba(74,159,212,0.1); border-color: var(--accent); color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- HEADER -->
+  <header>
+    <div class="logo" onclick="showPage('home')">
+      <span class="logo-icon">🌙</span>
+      WILDKIN
+    </div>
+    <nav>
+      <button class="nav-btn active" onclick="showPage('home')" id="nav-home">Inicio</button>
+      <button class="nav-btn" onclick="showPage('community')" id="nav-community">Manada</button>
+      <button class="nav-btn" onclick="showPage('diary')" id="nav-diary">Diario</button>
+      <button class="nav-btn" onclick="showPage('premium')" id="nav-premium">✦ Premium</button>
+    </nav>
+    <div class="header-right">
+      <div id="guest-btns" style="display:flex;gap:8px">
+        <button class="btn btn-ghost" onclick="openModal('login')">Entrar</button>
+        <button class="btn btn-primary" onclick="openModal('register')">Unirse</button>
+      </div>
+      <div id="user-btns" style="display:none">
+        <div class="dropdown">
+          <div class="user-avatar" onclick="toggleDropdown()" id="user-avatar-btn">🐺</div>
+          <div class="dropdown-menu" id="user-dropdown">
+            <div style="padding:8px 12px; border-bottom:1px solid var(--border); margin-bottom:6px;">
+              <div style="font-size:0.9rem;color:var(--text)" id="dropdown-username">usuario</div>
+              <div style="font-size:0.75rem;color:var(--text3)" id="dropdown-therian">Therian</div>
+            </div>
+            <button class="dropdown-item" onclick="showPage('diary');closeDropdown()">📖 Mi Diario</button>
+            <button class="dropdown-item" onclick="showPage('premium');closeDropdown()">✦ Premium</button>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item danger" onclick="logout()">Cerrar sesión</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- HOME PAGE -->
+    <div id="page-home" class="page active">
+      <div class="hero">
+        <span class="hero-moon">🌕</span>
+        <h1>Wildkin</h1>
+        <p>Un espacio sagrado donde los therians comparten su esencia, escriben sus memorias y se encuentran con su manada.</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" onclick="openModal('register')" style="padding:10px 28px;font-size:0.8rem">Unirse a la manada</button>
+          <button class="btn btn-ghost" onclick="showPage('community')" style="padding:10px 28px;font-size:0.8rem">Explorar la comunidad</button>
+        </div>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <span class="feature-icon">📖</span>
+          <h3>Diario Personal</h3>
+          <p>Escribe tus experiencias therianas, sueños, y momentos de cambio. Tu espacio íntimo y privado.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🐾</span>
+          <h3>Manada</h3>
+          <p>Comparte con otros therians en espacios organizados por tipo. Haz preguntas, comparte historias.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">👻</span>
+          <h3>Anonimato Premium</h3>
+          <p>Publica sin revelar tu identidad. Comparte tus pensamientos más profundos con total seguridad.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">✦</span>
+          <h3>Premium</h3>
+          <p>Accede a foros exclusivos, posts sin límite de caracteres, insignias únicas y mucho más.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMMUNITY PAGE -->
+    <div id="page-community" class="page">
+      <div id="community-list-view">
+        <div class="community-layout">
+          <div>
+            <button class="new-post-btn" onclick="openNewPost()">
+              🐾 &nbsp; ¿Qué hay en tu mente hoy? Comparte con la manada...
+            </button>
+            <div class="posts-list" id="posts-container"></div>
+          </div>
+          <div>
+            <div class="sidebar-card">
+              <h3>Packs / Grupos</h3>
+              <div class="pack-list">
+                <div class="pack-item active" onclick="filterPack('all',this)">🌙 Todos los Packs <span class="pack-count" id="count-all">0</span></div>
+                <div class="pack-item" onclick="filterPack('Cánido',this)">🐺 Cánidos (Lobos/Perros) <span class="pack-count" id="count-canido">0</span></div>
+                <div class="pack-item" onclick="filterPack('Felino',this)">🐈 Felinos <span class="pack-count" id="count-felino">0</span></div>
+                <div class="pack-item" onclick="filterPack('Aviar',this)">🦅 Aviares <span class="pack-count" id="count-aviar">0</span></div>
+                <div class="pack-item" onclick="filterPack('Zorro',this)">🦊 Zorros <span class="pack-count" id="count-zorro">0</span></div>
+                <div class="pack-item" onclick="filterPack('Cérvido',this)">🦌 Cérvidos <span class="pack-count" id="count-cervido">0</span></div>
+                <div class="pack-item" onclick="filterPack('Otro',this)">🌀 Otros / Míticos <span class="pack-count" id="count-otro">0</span></div>
+              </div>
+            </div>
+            <div class="sidebar-card">
+              <h3>Reglas de la Manada</h3>
+              <div style="display:flex;flex-direction:column;gap:8px;font-size:0.88rem;color:var(--text2);line-height:1.6">
+                <p>🌿 Respeta a todos los therians</p>
+                <p>🌙 No hagas outing sin consentimiento</p>
+                <p>🐾 El odio y el acoso no tienen lugar aquí</p>
+                <p>✦ Los posts anónimos son solo para miembros premium</p>
+              </div>
+            </div>
+            <div class="sidebar-card" style="background:linear-gradient(135deg,var(--surface),rgba(212,168,42,0.05));border-color:rgba(212,168,42,0.2)">
+              <h3 style="color:var(--premium)">✦ Wildkin Premium</h3>
+              <p style="font-size:0.88rem;color:var(--text2);line-height:1.6;margin-bottom:12px">Posts anónimos, foros exclusivos, diario ilimitado y más.</p>
+              <button class="btn btn-premium btn-sm" style="width:100%" onclick="showPage('premium')">Ver planes →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Full post view -->
+      <div id="community-post-view" style="display:none">
+        <button class="back-btn" onclick="showCommunityList()">← Volver a la manada</button>
+        <div id="post-full-content"></div>
+        <div class="comments-section">
+          <h3>Comentarios</h3>
+          <div class="comment-form">
+            <input type="text" class="form-group" style="background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:8px 14px;color:var(--text);font-family:'Crimson Pro',serif;font-size:0.95rem;outline:none;" id="comment-input" placeholder="Escribe un comentario...">
+            <button class="btn btn-primary btn-sm" onclick="addComment()" style="white-space:nowrap">Comentar</button>
+          </div>
+          <div id="comments-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIARY PAGE -->
+    <div id="page-diary" class="page">
+      <div id="diary-locked" style="display:none">
+        <div style="text-align:center;padding:80px 20px">
+          <div style="font-size:4rem;margin-bottom:20px">📖</div>
+          <h2 style="font-family:'Cinzel Decorative',serif;color:var(--text);margin-bottom:10px;letter-spacing:2px">Tu Diario Personal</h2>
+          <p style="color:var(--text3);font-size:1rem;max-width:400px;margin:0 auto 24px;font-style:italic">Inicia sesión para acceder a tu diario personal y registrar tus experiencias como therian.</p>
+          <button class="btn btn-primary" onclick="openModal('login')">Iniciar sesión</button>
+        </div>
+      </div>
+      <div id="diary-content" style="display:none">
+        <div class="diary-layout">
+          <div class="diary-sidebar">
+            <div class="sidebar-card">
+              <h3>Mis Entradas</h3>
+              <button class="btn btn-primary btn-sm" style="width:100%;margin-bottom:10px" onclick="newDiaryEntry()">+ Nueva entrada</button>
+              <div class="diary-entries-list" id="diary-entries-list"></div>
+            </div>
+          </div>
+          <div>
+            <div class="diary-editor" id="diary-editor">
+              <div class="editor-toolbar">
+                <span>Herramientas</span>
+                <button class="tool-btn" onclick="insertText('**', '**')"><b>B</b></button>
+                <button class="tool-btn" onclick="insertText('_', '_')"><i>I</i></button>
+                <button class="tool-btn" onclick="insertText('🐾 ')">🐾</button>
+                <button class="tool-btn" onclick="insertText('🌙 ')">🌙</button>
+                <button class="tool-btn" onclick="insertText('🌿 ')">🌿</button>
+                <button class="tool-btn" onclick="insertText('✦ ')">✦</button>
+              </div>
+              <input type="text" id="diary-title-input" placeholder="Título de la entrada...">
+              <textarea id="diary-content-input" placeholder="Escribe tus pensamientos, tu conexión con tu teriótipo, tus sueños, tus emociones... Este es tu espacio seguro."></textarea>
+              <div class="editor-footer">
+                <div>
+                  <div style="font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Estado de ánimo</div>
+                  <div class="mood-picker">
+                    <button class="mood-btn" onclick="selectMood(this,'🌕')">🌕</button>
+                    <button class="mood-btn" onclick="selectMood(this,'🐺')">🐺</button>
+                    <button class="mood-btn" onclick="selectMood(this,'🌿')">🌿</button>
+                    <button class="mood-btn" onclick="selectMood(this,'⚡')">⚡</button>
+                    <button class="mood-btn" onclick="selectMood(this,'🌧️')">🌧️</button>
+                    <button class="mood-btn" onclick="selectMood(this,'🔥')">🔥</button>
+                  </div>
+                </div>
+                <button class="btn btn-primary" onclick="saveDiaryEntry()">Guardar entrada</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PREMIUM PAGE -->
+    <div id="page-premium" class="page">
+      <div class="premium-hero">
+        <div style="font-size:3rem;margin-bottom:16px;filter:drop-shadow(0 0 16px rgba(212,168,42,0.5))">✦</div>
+        <h1>Wildkin Premium</h1>
+        <p>Desbloquea el pleno potencial de tu experiencia therian. Únete a los guardianes de la manada.</p>
+      </div>
+      <div class="plans-grid">
+        <div class="plan-card">
+          <div class="plan-name">🌙 Luna</div>
+          <div class="plan-price"><span class="amount">Gratis</span></div>
+          <ul class="plan-features">
+            <li>Diario personal (5 entradas/mes)</li>
+            <li>Acceso a foros públicos</li>
+            <li>Votaciones en posts</li>
+            <li>Perfil básico con teriótipo</li>
+          </ul>
+          <button class="btn btn-ghost" style="width:100%" onclick="openModal('register')">Comenzar gratis</button>
+        </div>
+        <div class="plan-card featured">
+          <div class="plan-badge">MÁS POPULAR</div>
+          <div class="plan-name">🐾 Espíritu</div>
+          <div class="plan-price"><span class="amount">$4.99</span><span class="period"> / mes</span></div>
+          <ul class="plan-features">
+            <li class="premium">Diario ilimitado</li>
+            <li class="premium">Posteo anónimo en la comunidad</li>
+            <li class="premium">Insignia de miembro Premium</li>
+            <li class="premium">Acceso a foros exclusivos</li>
+            <li>Posts sin límite de caracteres</li>
+            <li>Prioridad en búsqueda</li>
+          </ul>
+          <button class="btn btn-premium" style="width:100%" onclick="subscribePremium('espiritu')">Activar Espíritu</button>
+        </div>
+        <div class="plan-card">
+          <div class="plan-name">🌕 Alfa</div>
+          <div class="plan-price"><span class="amount">$9.99</span><span class="period"> / mes</span></div>
+          <ul class="plan-features">
+            <li class="premium">Todo lo de Espíritu</li>
+            <li class="premium">Crear tu propio Pack / subforo</li>
+            <li class="premium">Insignia Alfa exclusiva</li>
+            <li class="premium">Diario con contraseña extra</li>
+            <li class="premium">Comentarios anónimos</li>
+            <li class="premium">Soporte prioritario</li>
+          </ul>
+          <button class="btn btn-premium" style="width:100%" onclick="subscribePremium('alfa')">Activar Alfa</button>
+        </div>
+      </div>
+      <div id="premium-faq" style="max-width:600px;margin:0 auto;padding:20px">
+        <h3 style="font-family:'Cinzel Decorative',serif;font-size:1rem;color:var(--text);letter-spacing:2px;text-align:center;margin-bottom:24px">Preguntas frecuentes</h3>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="sidebar-card" style="padding:16px">
+            <div style="font-weight:600;color:var(--text);margin-bottom:6px;font-size:0.95rem">¿El modo anónimo es completamente seguro?</div>
+            <div style="color:var(--text3);font-size:0.9rem;line-height:1.6">Los posts anónimos no muestran tu nombre a ningún usuario. Solo los administradores pueden ver quién los publicó en caso de violación de reglas.</div>
+          </div>
+          <div class="sidebar-card" style="padding:16px">
+            <div style="font-weight:600;color:var(--text);margin-bottom:6px;font-size:0.95rem">¿Puedo cancelar cuando quiera?</div>
+            <div style="color:var(--text3);font-size:0.9rem;line-height:1.6">Sí, puedes cancelar tu suscripción en cualquier momento. Mantendrás el acceso hasta el final del periodo pagado.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="auth-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('auth-modal')">✕</button>
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Iniciar sesión</button>
+      <button class="tab-btn" id="tab-register" onclick="switchTab('register')">Registrarse</button>
+    </div>
+    <!-- Login form -->
+    <div id="form-login">
+      <div class="form-group">
+        <label>Nombre de usuario o email</label>
+        <input type="text" id="login-user" placeholder="tu_nombre">
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" id="login-pass" placeholder="••••••••">
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:8px;padding:11px" onclick="login()">Entrar a la manada</button>
+    </div>
+    <!-- Register form -->
+    <div id="form-register" style="display:none">
+      <div class="form-group">
+        <label>Nombre de usuario</label>
+        <input type="text" id="reg-user" placeholder="tu_nombre_therian">
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="reg-email" placeholder="tu@email.com">
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" id="reg-pass" placeholder="••••••••">
+      </div>
+      <div class="form-group">
+        <label>Tu teriótipo principal</label>
+        <select id="reg-therotype">
+          <option value="">Selecciona tu teriótipo...</option>
+          <option>🐺 Lobo</option>
+          <option>🦊 Zorro</option>
+          <option>🐈 Felino / Gato</option>
+          <option>🦅 Ave / Raptor</option>
+          <option>🦌 Cérvido</option>
+          <option>🐉 Dragón / Mítico</option>
+          <option>🐺 Cánido (otro)</option>
+          <option>🌀 Otro</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:8px;padding:11px" onclick="register()">Unirme a Wildkin</button>
+    </div>
+  </div>
+</div>
+
+<!-- NEW POST MODAL -->
+<div class="modal-overlay new-post-modal" id="new-post-modal">
+  <div class="modal" style="max-width:560px">
+    <button class="modal-close" onclick="closeModal('new-post-modal')">✕</button>
+    <h2 style="margin-bottom:4px">Nuevo post</h2>
+    <p style="margin-bottom:20px">Comparte con tu manada</p>
+    <div class="form-group">
+      <label>Título</label>
+      <input type="text" id="np-title" placeholder="¿Sobre qué quieres hablar?">
+    </div>
+    <div class="form-group">
+      <label>Pack / Grupo</label>
+      <select id="np-pack">
+        <option value="Cánido">🐺 Cánidos</option>
+        <option value="Felino">🐈 Felinos</option>
+        <option value="Aviar">🦅 Aviares</option>
+        <option value="Zorro">🦊 Zorros</option>
+        <option value="Cérvido">🦌 Cérvidos</option>
+        <option value="Otro">🌀 Otros / Míticos</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Contenido</label>
+      <textarea id="np-body" placeholder="Escribe tu post..." style="min-height:140px"></textarea>
+    </div>
+    <div class="form-group" id="anon-option" style="display:none">
+      <div class="checkbox-group">
+        <input type="checkbox" id="np-anon">
+        <label for="np-anon">👻 Publicar de forma anónima (Premium)</label>
+      </div>
+    </div>
+    <button class="btn btn-primary" style="width:100%;padding:11px;margin-top:4px" onclick="createPost()">Publicar en la manada</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SUPABASE CDN — no tocar esta línea
+═══════════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+<script>
+// ╔══════════════════════════════════════════════════════╗
+// ║   ⚙️  CONFIGURACIÓN SUPABASE — EDITA ESTO PRIMERO   ║
+// ║   1. Ve a supabase.com → tu proyecto → Settings      ║
+// ║   2. API → copia "Project URL" y "anon public"        ║
+// ╚══════════════════════════════════════════════════════╝
+const SUPABASE_URL  = 'https://fgtvpxsxdqhwreiqizot.supabase.co';  
+const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZndHZweHN4ZHFod3JlaXFpem90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0ODc4MjUsImV4cCI6MjA4ODA2MzgyNX0.yozo8ez6RMPl76feWAyqzSw8EyRzmFRUHXFGHvEf-Jk'; 
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ========== STATE ==========
+let currentPage = 'home';
+let currentUser = null;
+let currentPostFilter = 'all';
+let viewingPostId = null;
+let currentDiaryEntryId = null;
+let selectedMood = '';
+
+const THERIO_EMOJIS = {
+  'Cánido':'🐺','Felino':'🐈','Aviar':'🦅','Zorro':'🦊','Cérvido':'🦌','Otro':'🌀'
+};
+const PACK_CLASSES = {
+  'Cánido':'wolf','Felino':'feline','Aviar':'avian','Zorro':'fox','Cérvido':'deer','Otro':'oc'
+};
+
+// Runtime cache (se llena desde Supabase)
+let posts = [];
+let diaryEntries = [];
+let userVotes = new Set(); // IDs de posts donde el usuario votó
+
+// ========== NAVIGATION ==========
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  const navBtn = document.getElementById('nav-' + page);
+  if(navBtn) navBtn.classList.add('active');
+  currentPage = page;
+
+  if(page === 'community') loadAndRenderPosts();
+  if(page === 'diary') initDiary();
+  closeDropdown();
+}
+
+// ========== AUTH (SUPABASE) ==========
+function openModal(type) {
+  document.getElementById('auth-modal').classList.add('open');
+  switchTab(type);
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+function switchTab(tab) {
+  document.getElementById('tab-login').classList.toggle('active', tab==='login');
+  document.getElementById('tab-register').classList.toggle('active', tab==='register');
+  document.getElementById('form-login').style.display = tab==='login' ? 'block' : 'none';
+  document.getElementById('form-register').style.display = tab==='register' ? 'block' : 'none';
+}
+
+async function login() {
+  const email = document.getElementById('login-user').value.trim();
+  const pass  = document.getElementById('login-pass').value;
+  if(!email || !pass) { showNotif('Completa los campos', 'error'); return; }
+
+  showLoading(true);
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  showLoading(false);
+
+  if(error) { showNotif('Email o contraseña incorrectos', 'error'); return; }
+
+  // load profile
+  const profile = await loadProfile(data.user.id);
+  setUser({ ...data.user, ...profile });
+  closeModal('auth-modal');
+  showNotif(`¡Bienvenido/a de vuelta, ${profile.username}! 🌙`, 'success');
+}
+
+async function register() {
+  const username  = document.getElementById('reg-user').value.trim();
+  const email     = document.getElementById('reg-email').value.trim();
+  const pass      = document.getElementById('reg-pass').value;
+  const therotype = document.getElementById('reg-therotype').value;
+  if(!username || !email || !pass || !therotype) { showNotif('Completa todos los campos', 'error'); return; }
+
+  showLoading(true);
+  // 1. Crear usuario en Supabase Auth
+  const { data, error } = await sb.auth.signUp({ email, password: pass });
+  if(error) { showLoading(false); showNotif(error.message, 'error'); return; }
+
+  // 2. Crear perfil en tabla profiles
+  const avatar = therotype.split(' ')[0] || '🌙';
+  const { error: profErr } = await sb.from('profiles').insert({
+    id: data.user.id,
+    username,
+    therotype,
+    avatar,
+    premium: null
+  });
+  showLoading(false);
+  if(profErr) { showNotif('Error creando perfil: ' + profErr.message, 'error'); return; }
+
+  const profile = { username, therotype, avatar, premium: null };
+  setUser({ ...data.user, ...profile });
+  closeModal('auth-modal');
+  showNotif(`¡Bienvenido/a a la manada, ${username}! 🐾`, 'success');
+}
+
+async function loadProfile(userId) {
+  const { data } = await sb.from('profiles').select('*').eq('id', userId).single();
+  return data || {};
+}
+
+function setUser(user) {
+  currentUser = user;
+  document.getElementById('guest-btns').style.display = 'none';
+  document.getElementById('user-btns').style.display = 'flex';
+  document.getElementById('user-avatar-btn').textContent = user.avatar || '🌙';
+  document.getElementById('dropdown-username').textContent = user.username + (user.premium ? ' ✦' : '');
+  document.getElementById('dropdown-therian').textContent = user.therotype || 'Therian';
+  if(currentPage === 'diary') initDiary();
+}
+
+async function logout() {
+  await sb.auth.signOut();
+  currentUser = null;
+  userVotes = new Set();
+  document.getElementById('guest-btns').style.display = 'flex';
+  document.getElementById('user-btns').style.display = 'none';
+  closeDropdown();
+  showNotif('Has cerrado sesión. ¡Hasta pronto! 🌙');
+  if(currentPage === 'diary') initDiary();
+}
+
+function toggleDropdown() {
+  document.getElementById('user-dropdown').classList.toggle('open');
+}
+function closeDropdown() {
+  document.getElementById('user-dropdown').classList.remove('open');
+}
+document.addEventListener('click', e => {
+  if(!e.target.closest('.dropdown')) closeDropdown();
+});
+
+// ========== COMMUNITY (SUPABASE) ==========
+async function loadAndRenderPosts() {
+  document.getElementById('community-list-view').style.display = 'block';
+  document.getElementById('community-post-view').style.display = 'none';
+  const container = document.getElementById('posts-container');
+  container.innerHTML = `<div class="empty-state"><div class="icon" style="animation:moonFloat 1.5s ease-in-out infinite">🌙</div><p>Cargando la manada...</p></div>`;
+
+  // Fetch posts + comment count
+  let query = sb.from('posts').select('*, comments(count)').order('created_at', { ascending: false });
+  if(currentPostFilter !== 'all') query = query.eq('pack', currentPostFilter);
+  const { data: rawPosts, error } = await query;
+  if(error) { container.innerHTML = `<div class="empty-state"><p>Error cargando posts 😢 — ${error.message}</p></div>`; return; }
+
+  posts = rawPosts || [];
+
+  // Fetch votes of current user
+  if(currentUser) {
+    const { data: votes } = await sb.from('post_votes').select('post_id').eq('user_id', currentUser.id);
+    userVotes = new Set((votes || []).map(v => v.post_id));
+  }
+
+  renderPosts();
+}
+
+function renderPosts() {
+  const container = document.getElementById('posts-container');
+
+  // Update counts sidebar
+  const allCount = posts.length;
+  // Re-query counts from local cache
+  const counts = {};
+  posts.forEach(p => { counts[p.pack] = (counts[p.pack]||0)+1; });
+  document.getElementById('count-all').textContent = allCount;
+  document.getElementById('count-canido').textContent  = counts['Cánido']||0;
+  document.getElementById('count-felino').textContent  = counts['Felino']||0;
+  document.getElementById('count-aviar').textContent   = counts['Aviar']||0;
+  document.getElementById('count-zorro').textContent   = counts['Zorro']||0;
+  document.getElementById('count-cervido').textContent = counts['Cérvido']||0;
+  document.getElementById('count-otro').textContent    = counts['Otro']||0;
+
+  if(posts.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="icon">🌙</div><p>No hay posts en este pack todavía. ¡Sé el primero!</p></div>`;
+    return;
+  }
+
+  container.innerHTML = posts.map(p => {
+    const voted = userVotes.has(p.id);
+    const commentCount = p.comments?.[0]?.count ?? 0;
+    const timeAgo = formatDate(p.created_at);
+    return `
+    <div class="post-card" onclick="viewPost('${p.id}')">
+      <div class="post-meta">
+        <span class="post-author ${p.is_anon ? 'anon' : ''}">${p.is_anon ? '👻 Anónimo' : p.author_name}</span>
+        <span>·</span>
+        <span class="pack-tag ${PACK_CLASSES[p.pack]||''}">${THERIO_EMOJIS[p.pack]||'🌀'} ${p.pack}</span>
+        ${p.is_anon ? '<span class="anon-tag">Anónimo</span>' : ''}
+        <span>·</span>
+        <span>${timeAgo}</span>
+      </div>
+      <h2>${escHtml(p.title)}</h2>
+      <p>${escHtml(p.body)}</p>
+      <div class="post-actions">
+        <button class="post-action-btn ${voted?'voted':''}" onclick="event.stopPropagation();votePost('${p.id}')">
+          🐾 <span id="votes-${p.id}">${p.votes}</span> aullidos
+        </button>
+        <button class="post-action-btn">💬 ${commentCount} comentarios</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterPack(pack, el) {
+  document.querySelectorAll('.pack-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  currentPostFilter = pack;
+  loadAndRenderPosts();
+}
+
+async function votePost(id) {
+  if(!currentUser) { showNotif('Inicia sesión para votar', 'error'); return; }
+  const post = posts.find(p => p.id === id);
+  if(!post) return;
+
+  if(userVotes.has(id)) {
+    // Quitar voto
+    await sb.from('post_votes').delete().eq('post_id', id).eq('user_id', currentUser.id);
+    await sb.from('posts').update({ votes: post.votes - 1 }).eq('id', id);
+    post.votes--;
+    userVotes.delete(id);
+  } else {
+    // Dar voto
+    await sb.from('post_votes').insert({ post_id: id, user_id: currentUser.id });
+    await sb.from('posts').update({ votes: post.votes + 1 }).eq('id', id);
+    post.votes++;
+    userVotes.add(id);
+  }
+  // Actualizar solo el número sin re-renderizar todo
+  const el = document.getElementById('votes-' + id);
+  if(el) el.textContent = post.votes;
+  const btn = el?.closest('.post-action-btn');
+  if(btn) btn.classList.toggle('voted', userVotes.has(id));
+}
+
+async function viewPost(id) {
+  viewingPostId = id;
+  document.getElementById('community-list-view').style.display = 'none';
+  document.getElementById('community-post-view').style.display = 'block';
+  document.getElementById('post-full-content').innerHTML = `<div class="empty-state"><div class="icon" style="animation:moonFloat 1.5s ease-in-out infinite">🌙</div><p>Cargando...</p></div>`;
+  document.getElementById('comments-list').innerHTML = '';
+
+  // Fetch post
+  const { data: post } = await sb.from('posts').select('*').eq('id', id).single();
+  if(!post) return;
+
+  // Fetch comments
+  const { data: comments } = await sb.from('comments').select('*').eq('post_id', id).order('created_at');
+  const voted = userVotes.has(id);
+
+  document.getElementById('post-full-content').innerHTML = `
+    <div class="post-full">
+      <div class="post-meta" style="margin-bottom:14px">
+        <span class="post-author ${post.is_anon?'anon':''}">${post.is_anon ? '👻 Anónimo' : post.author_name}</span>
+        <span>·</span>
+        <span class="pack-tag ${PACK_CLASSES[post.pack]||''}">${THERIO_EMOJIS[post.pack]||'🌀'} ${post.pack}</span>
+        ${post.is_anon ? '<span class="anon-tag">Anónimo</span>' : ''}
+        <span>·</span><span>${formatDate(post.created_at)}</span>
+      </div>
+      <h1>${escHtml(post.title)}</h1>
+      <div class="post-body">${escHtml(post.body)}</div>
+      <div class="post-actions" style="margin-top:20px;padding-top:16px">
+        <button class="post-action-btn ${voted?'voted':''}" onclick="votePost('${post.id}')">
+          🐾 <span id="votes-full-${post.id}">${post.votes}</span> aullidos
+        </button>
+      </div>
+    </div>`;
+
+  renderComments(comments || []);
+}
+
+function renderComments(comments) {
+  const list = document.getElementById('comments-list');
+  if(comments.length === 0) {
+    list.innerHTML = `<div class="empty-state" style="padding:30px"><p style="font-size:0.9rem">Sé el primero en comentar 🌙</p></div>`;
+    return;
+  }
+  list.innerHTML = comments.map(c => `
+    <div class="comment-item">
+      <div class="comment-author ${c.is_anon?'anon':''}">${c.is_anon ? '👻 Anónimo' : escHtml(c.author_name)}</div>
+      <div class="comment-body">${escHtml(c.body)}</div>
+    </div>`).join('');
+}
+
+async function addComment() {
+  if(!currentUser) { showNotif('Inicia sesión para comentar', 'error'); return; }
+  const input = document.getElementById('comment-input');
+  const text = input.value.trim();
+  if(!text) return;
+
+  const { error } = await sb.from('comments').insert({
+    post_id: viewingPostId,
+    author_id: currentUser.id,
+    author_name: currentUser.username,
+    is_anon: false,
+    body: text
+  });
+  if(error) { showNotif('Error al comentar', 'error'); return; }
+  input.value = '';
+  // Reload comments
+  const { data: comments } = await sb.from('comments').select('*').eq('post_id', viewingPostId).order('created_at');
+  renderComments(comments || []);
+  showNotif('Comentario publicado 🐾', 'success');
+}
+
+function showCommunityList() {
+  document.getElementById('community-list-view').style.display = 'block';
+  document.getElementById('community-post-view').style.display = 'none';
+}
+
+function openNewPost() {
+  if(!currentUser) { openModal('login'); return; }
+  document.getElementById('anon-option').style.display = currentUser.premium ? 'block' : 'none';
+  document.getElementById('new-post-modal').classList.add('open');
+}
+
+async function createPost() {
+  if(!currentUser) return;
+  const title  = document.getElementById('np-title').value.trim();
+  const pack   = document.getElementById('np-pack').value;
+  const body   = document.getElementById('np-body').value.trim();
+  const isAnon = document.getElementById('np-anon').checked && !!currentUser.premium;
+  if(!title || !body) { showNotif('Completa título y contenido', 'error'); return; }
+
+  showLoading(true);
+  const { error } = await sb.from('posts').insert({
+    title,
+    body,
+    pack,
+    author_id: currentUser.id,
+    author_name: isAnon ? 'anónimo_' + Math.random().toString(36).substr(2,4) : currentUser.username,
+    is_anon: isAnon,
+    votes: 0
+  });
+  showLoading(false);
+  if(error) { showNotif('Error publicando: ' + error.message, 'error'); return; }
+
+  closeModal('new-post-modal');
+  document.getElementById('np-title').value = '';
+  document.getElementById('np-body').value  = '';
+  document.getElementById('np-anon').checked = false;
+  await loadAndRenderPosts();
+  showNotif(isAnon ? '¡Post anónimo publicado! 👻' : '¡Post publicado en la manada! 🐾', 'success');
+}
+
+// ========== DIARY (SUPABASE) ==========
+async function initDiary() {
+  if(!currentUser) {
+    document.getElementById('diary-locked').style.display = 'block';
+    document.getElementById('diary-content').style.display = 'none';
+    return;
+  }
+  document.getElementById('diary-locked').style.display = 'none';
+  document.getElementById('diary-content').style.display = 'block';
+  await loadDiaryEntries();
+}
+
+async function loadDiaryEntries() {
+  const { data } = await sb.from('diary_entries')
+    .select('*').eq('user_id', currentUser.id)
+    .order('created_at', { ascending: false });
+  diaryEntries = data || [];
+  renderDiaryList();
+  if(diaryEntries.length === 0) newDiaryEntry();
+}
+
+function renderDiaryList() {
+  const list = document.getElementById('diary-entries-list');
+  if(diaryEntries.length === 0) {
+    list.innerHTML = `<div style="color:var(--text3);font-size:0.85rem;font-style:italic;padding:8px 0">Sin entradas aún. ¡Empieza a escribir!</div>`;
+    return;
+  }
+  list.innerHTML = diaryEntries.map(e => `
+    <div class="diary-entry-item ${currentDiaryEntryId===e.id?'active':''}" onclick="loadDiaryEntry('${e.id}')">
+      <div class="entry-title">${e.mood || '🌙'} ${escHtml(e.title || 'Sin título')}</div>
+      <div class="entry-date">${formatDate(e.created_at)}</div>
+    </div>`).join('');
+}
+
+function newDiaryEntry() {
+  currentDiaryEntryId = null;
+  document.getElementById('diary-title-input').value = '';
+  document.getElementById('diary-content-input').value = '';
+  selectedMood = '';
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+  renderDiaryList();
+}
+
+function loadDiaryEntry(id) {
+  const entry = diaryEntries.find(e => e.id === id);
+  if(!entry) return;
+  currentDiaryEntryId = id;
+  document.getElementById('diary-title-input').value = entry.title || '';
+  document.getElementById('diary-content-input').value = entry.content || '';
+  selectedMood = entry.mood || '';
+  document.querySelectorAll('.mood-btn').forEach(b => {
+    b.classList.toggle('selected', b.getAttribute('onclick').includes(`'${entry.mood}'`));
+  });
+  renderDiaryList();
+}
+
+async function saveDiaryEntry() {
+  if(!currentUser) return;
+  const title   = document.getElementById('diary-title-input').value.trim();
+  const content = document.getElementById('diary-content-input').value.trim();
+  if(!title && !content) { showNotif('Escribe algo primero', 'error'); return; }
+
+  // Chequear límite gratuito
+  if(!currentUser.premium) {
+    const thisMonth = new Date();
+    thisMonth.setDate(1); thisMonth.setHours(0,0,0,0);
+    const { count } = await sb.from('diary_entries')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', currentUser.id)
+      .gte('created_at', thisMonth.toISOString());
+    if(!currentDiaryEntryId && (count || 0) >= 5) {
+      showNotif('Límite de 5 entradas/mes alcanzado. Actualiza a Premium ✦', 'error');
+      return;
+    }
+  }
+
+  showLoading(true);
+  let error;
+  if(currentDiaryEntryId) {
+    // Actualizar
+    ({ error } = await sb.from('diary_entries').update({
+      title: title || 'Sin título',
+      content,
+      mood: selectedMood || '🌙'
+    }).eq('id', currentDiaryEntryId));
+  } else {
+    // Nueva entrada
+    const { data, error: insertErr } = await sb.from('diary_entries').insert({
+      user_id: currentUser.id,
+      title: title || 'Sin título',
+      content,
+      mood: selectedMood || '🌙'
+    }).select().single();
+    error = insertErr;
+    if(data) currentDiaryEntryId = data.id;
+  }
+  showLoading(false);
+  if(error) { showNotif('Error guardando: ' + error.message, 'error'); return; }
+  await loadDiaryEntries();
+  showNotif('Entrada guardada ✦', 'success');
+}
+
+function selectMood(btn, mood) {
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedMood = mood;
+}
+
+function insertText(before, after='') {
+  const ta = document.getElementById('diary-content-input');
+  const start = ta.selectionStart, end = ta.selectionEnd;
+  const selected = ta.value.substring(start, end);
+  ta.value = ta.value.substring(0, start) + before + selected + after + ta.value.substring(end);
+  ta.focus();
+  ta.selectionStart = ta.selectionEnd = start + before.length + selected.length + after.length;
+}
+
+// ========== PREMIUM (Lemon Squeezy) ==========
+function subscribePremium(plan) {
+  if(!currentUser) { openModal('login'); return; }
+  // 👇 Reemplaza con tus URLs reales de Lemon Squeezy
+  const links = {
+    espiritu: 'https://TU-TIENDA.lemonsqueezy.com/checkout/espiritu', // 👈 reemplaza
+    alfa:     'https://TU-TIENDA.lemonsqueezy.com/checkout/alfa'      // 👈 reemplaza
+  };
+  window.open(links[plan], '_blank');
+  showNotif('Redirigiendo al checkout seguro... 🔐');
+  // Después de pagar, Lemon Squeezy enviará un webhook a tu backend
+  // que actualizará el campo `premium` en la tabla `profiles` de Supabase
+}
+
+// ========== HELPERS ==========
+function escHtml(str) {
+  if(!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function formatDate(isoStr) {
+  if(!isoStr) return '';
+  const d = new Date(isoStr);
+  const diff = Date.now() - d.getTime();
+  const mins = Math.floor(diff/60000);
+  if(mins < 1)  return 'Ahora mismo';
+  if(mins < 60) return `Hace ${mins} min`;
+  const hrs = Math.floor(mins/60);
+  if(hrs < 24)  return `Hace ${hrs} hora${hrs>1?'s':''}`;
+  const days = Math.floor(hrs/24);
+  if(days < 7)  return `Hace ${days} día${days>1?'s':''}`;
+  return d.toLocaleDateString('es', {day:'numeric', month:'long'});
+}
+
+function showLoading(on) {
+  let overlay = document.getElementById('loading-overlay');
+  if(!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'loading-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;background:rgba(8,12,20,0.7);backdrop-filter:blur(4px)';
+    overlay.innerHTML = '<div style="font-size:2.5rem;animation:moonFloat 1s ease-in-out infinite">🌙</div>';
+    document.body.appendChild(overlay);
+  }
+  overlay.style.display = on ? 'flex' : 'none';
+}
+
+// ========== NOTIFICATIONS ==========
+function showNotif(msg, type='') {
+  const n = document.createElement('div');
+  n.className = 'notif ' + type;
+  n.textContent = msg;
+  document.body.appendChild(n);
+  setTimeout(() => { n.style.opacity='0'; n.style.transform='translateX(20px)'; n.style.transition='all 0.3s'; setTimeout(()=>n.remove(),300); }, 3000);
+}
+
+// ========== INIT ==========
+// Detectar sesión activa al cargar la página (si el usuario ya inició sesión antes)
+(async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if(session?.user) {
+    const profile = await loadProfile(session.user.id);
+    if(profile) setUser({ ...session.user, ...profile });
+  }
+})();
+
+// Escuchar cambios de sesión en tiempo real
+sb.auth.onAuthStateChange(async (event, session) => {
+  if(event === 'SIGNED_OUT') {
+    currentUser = null;
+    document.getElementById('guest-btns').style.display = 'flex';
+    document.getElementById('user-btns').style.display = 'none';
+  }
+});
+
+// Cargar posts iniciales cuando se abre la comunidad
+document.addEventListener('DOMContentLoaded', () => {
+  if(currentPage === 'community') loadAndRenderPosts();
+});
+</script>
+</body>
+</html>
